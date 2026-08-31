@@ -1,4 +1,5 @@
 from json import *
+from os import get_terminal_size
 
 class Utils():
     def _navigate_dict(self, current:dict, keys:list):
@@ -10,6 +11,7 @@ class Utils():
             current = current[key]
         return {"message":current}
 
+    
 class JSONUtils(Utils):
     def _get_json(self, name: str, path: list, keys:list):
         pathstr = ""
@@ -77,3 +79,70 @@ class JSONUtils(Utils):
             except:
                 return {"message":"failed", "error":"unknown"}
         return {"message":"done"}
+
+class DialougeInterface(JSONUtils):
+    def visualizeTree(self, tree):
+        text = ""
+        size = get_terminal_size().columns
+        nextLine = f" {tree[0]} "
+        nextLine = f"/{nextLine.center(int(size/2), "-")}\\"
+        nextLine = f"\n{nextLine.center(size, " ")}"
+        text+=nextLine
+
+        nextLine = f"{list(tree[1].keys())[0]}{" "* int(size/2 - len(list(tree[1].keys())[0])/2 - len(list(tree[1].keys())[1])/2)}{list(tree[1].keys())[1]}"
+        text += f"\n{nextLine.center(int(size), " ")}"
+        for _ in range(2):
+            nextLine = f"|{" "* int(size/2)}|".center(int(size), " ")
+            text += f"\n{nextLine}"
+
+        tree1 = tree[1][list(tree[1].keys())[0]]
+        tree2 = tree[1][list(tree[1].keys())[1]]
+        size /= 2
+
+
+        nextLine1 = f" {tree1[0]} "
+        if isinstance(tree1[1], dict):
+            nextLine1 = f"/{nextLine1.center(int(size/2), "-")}\\"
+        nextLine1 = f"\n{nextLine1.center(int(size), " ")}"
+
+        nextLine2 = f" {tree2[0]} "
+        if isinstance(tree2[1], dict):
+            nextLine2 = f"/{nextLine2.center(int(size/2), "-")}\\"
+        nextLine2 = f"{nextLine2.center(int(size), " ")}"
+        
+        text+=(nextLine1+nextLine2)
+
+        if isinstance(tree1[1], dict):
+            nextLine1 = f"{list(tree1[1].keys())[0]}{" "* int(size/2 - len(list(tree1[1].keys())[0])/2 - len(list(tree1[1].keys())[1])/2)}{list(tree1[1].keys())[1]}"
+        else:
+            nextLine1 = str(tree1[1]).center(int(size), " ")
+        if isinstance(tree2[1], dict):
+            nextLine2 = f"{list(tree2[1].keys())[0]}{" "* int(size/2 - len(list(tree2[1].keys())[0])/2 - len(list(tree2[1].keys())[1])/2)}{list(tree2[1].keys())[1]}"
+        else:
+            nextLine2 = str(tree2[1]).center(int(size), " ")
+        text += f"\n{nextLine1.center(int(size), " ")+nextLine2.center(int(size), " ")}"
+
+        for _ in range(2):
+            if isinstance(tree1[1], dict):
+                nextLine1 = f"|{" "* int(size/2)}|".center(int(size), " ")
+            else: nextLine1 = " "*int(size)
+            if isinstance(tree2[1], dict):
+                nextLine2 = f"|{" "* int(size/2)}|".center(int(size), " ")  
+            else: nextLine2 = " "*int(size)
+            text += f"\n{nextLine1 + nextLine2}"
+        ends = []
+        if isinstance(tree1[1], dict):
+            ends.extend([tree1[1][list(tree1[1].keys())[0]],tree1[1][list(tree1[1].keys())[1]]])
+        else:
+            ends.extend(["",""])
+
+        if isinstance(tree2[1], dict):
+            ends.extend([tree2[1][list(tree2[1].keys())[0]],tree2[1][list(tree2[1].keys())[1]]])
+        else:
+            ends.extend(["",""])
+        ends = [str(i) if isinstance(i, int) else "..." if i else "" for i in ends]
+
+        nextLine = f"{ends[0]}{" "* int(size/2)}{ends[1]}".center(int(size), " ") + f"{ends[2]}{" "* int(size/2)}{ends[3]}".center(int(size), " ")
+        text += f"\n{nextLine}"
+
+        return text
