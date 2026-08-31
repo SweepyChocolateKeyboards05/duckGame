@@ -77,8 +77,3 @@ class JSONUtils(Utils):
             except:
                 return {"message":"failed", "error":"unknown"}
         return {"message":"done"}
-
-
-a = JSONUtils()
-res = a._change_json(name = "afrikansk_skov_and", path = ["Dialouges"], keys = [1], add = {"hallo": "ihih", "Hej":["Hvordan har du det", 2]}, remove=[])
-print(res)
